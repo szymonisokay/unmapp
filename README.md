@@ -1,56 +1,64 @@
-# Welcome to your Expo app 👋
+# unmapp
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+An [Expo](https://expo.dev) app (SDK 57) built with [expo-router](https://docs.expo.dev/router/introduction), targeting iOS, Android, and web.
+
+## Requirements
+
+- Node.js 20+
+- iOS Simulator (Xcode) or Android emulator for native runs; the web target needs neither.
 
 ## Get started
 
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
 ```bash
-npm run reset-project
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+```bash
+npm start
+```
 
-### Other setup steps
+Then pick a target from the Metro output, or start one directly:
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+```bash
+npm run ios
+```
 
-## Learn more
+```bash
+npm run android
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+```bash
+npm run web
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Project layout
 
-## Join the community
+```text
+src/app/           expo-router routes — file name is the URL path
+  _layout.tsx      root layout (Stack navigator)
+  index.tsx        "/" screen
+assets/images/     app icons, splash, and image assets
+assets/expo.icon/  iOS icon composition source
+app.json           Expo config: name, scheme, icons, plugins, experiments
+tsconfig.json      strict TS; "@/*" -> ./src/*, "@/assets/*" -> ./assets/*
+```
 
-Join our community of developers creating universal apps.
+There is no `ios/` or `android/` directory — native projects are generated on demand
+(`npx expo prebuild`) and are gitignored. Change native config in `app.json`, not in
+generated folders.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Verification
+
+```bash
+npx tsc --noEmit
+```
+
+Typecheck is the only check wired up today. `npm run lint` runs `expo lint`, which
+prompts to install and configure ESLint the first time it is used — do that before
+relying on it. There is no test setup yet; see
+["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/) when one is needed.
+
+## Docs
+
+- [AGENTS.md](AGENTS.md) — how agents (and new contributors) should work in this repo.
+- [Expo SDK 57 docs](https://docs.expo.dev/versions/v57.0.0/) — the versioned reference this repo is pinned to.
