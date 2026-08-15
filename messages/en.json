@@ -1,0 +1,31 @@
+{
+  "home": {
+    "headline": "Discover what your map never showed you",
+    "placeholder": "The app's screens do not exist yet."
+  },
+  "category": {
+    "natura": "nature",
+    "historia": "history",
+    "architektura": "architecture",
+    "jedzenie": "food",
+    "fotografia": "photography",
+    "nietypowe": "unusual places",
+    "aktywnosc": "activity"
+  },
+  "transport": {
+    "pieszo": "on foot",
+    "rower": "by bike",
+    "auto": "by car",
+    "komunikacja": "by public transport"
+  },
+  "timeBudget": {
+    "30min": "30 minutes",
+    "1h": "1 hour",
+    "2h": "2 hours",
+    "polDnia": "half a day"
+  },
+  "discovery": {
+    "count_one": "{{count}} place discovered",
+    "count_other": "{{count}} places discovered"
+  }
+}

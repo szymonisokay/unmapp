@@ -1,0 +1,33 @@
+{
+  "home": {
+    "headline": "Odkryj to, czego nie ma na Twojej mapie",
+    "placeholder": "Ekrany aplikacji jeszcze nie istnieją."
+  },
+  "category": {
+    "natura": "natura",
+    "historia": "historia",
+    "architektura": "architektura",
+    "jedzenie": "jedzenie",
+    "fotografia": "fotografia",
+    "nietypowe": "miejsca nietypowe",
+    "aktywnosc": "aktywność"
+  },
+  "transport": {
+    "pieszo": "pieszo",
+    "rower": "rowerem",
+    "auto": "samochodem",
+    "komunikacja": "komunikacją"
+  },
+  "timeBudget": {
+    "30min": "30 minut",
+    "1h": "1 godzina",
+    "2h": "2 godziny",
+    "polDnia": "pół dnia"
+  },
+  "discovery": {
+    "count_one": "{{count}} odkryte miejsce",
+    "count_few": "{{count}} odkryte miejsca",
+    "count_many": "{{count}} odkrytych miejsc",
+    "count_other": "{{count}} odkrytego miejsca"
+  }
+}
