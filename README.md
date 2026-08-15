@@ -1,11 +1,11 @@
 # unmapp
 
-An [Expo](https://expo.dev) app (SDK 57) built with [expo-router](https://docs.expo.dev/router/introduction), targeting iOS, Android, and web.
+An [Expo](https://expo.dev) app (SDK 57) built with [expo-router](https://docs.expo.dev/router/introduction). **iOS is the only target for now.** The codebase stays cross-platform because Expo makes that free, but web is out of scope and nothing is checked against it.
 
 ## Requirements
 
 - Node.js 20+
-- iOS Simulator (Xcode) or Android emulator for native runs; the web target needs neither.
+- Xcode with an iOS Simulator
 
 ## Get started
 
@@ -14,22 +14,16 @@ npm install
 ```
 
 ```bash
-npm start
-```
-
-Then pick a target from the Metro output, or start one directly:
-
-```bash
 npm run ios
 ```
 
-```bash
-npm run android
-```
+That starts Metro and opens the app in the iOS Simulator. Leave it running — the
+usual workflow is one long-lived Metro instance that everything else attaches to,
+rather than restarting it per change.
 
-```bash
-npm run web
-```
+The `android` and `web` scripts still exist in `package.json` and will run, but
+neither is a supported target: nothing is designed, checked, or fixed against
+them.
 
 ## Project layout
 
@@ -53,9 +47,17 @@ generated folders.
 npx tsc --noEmit
 ```
 
-Typecheck is the only check wired up today. `npm run lint` runs `expo lint`, which
-prompts to install and configure ESLint the first time it is used — do that before
-relying on it. There is no test setup yet; see
+```bash
+npx expo export --platform ios --output-dir /tmp/unmapp-export
+```
+
+The export proves every import and route resolves, which the type checker does not.
+After both pass, look at the screen you changed on the iOS Simulator — there is no
+test suite, so seeing it render is the check. A web render does not count: it misses
+native text metrics, safe-area insets, and the splash-screen handoff.
+
+`npm run lint` runs `expo lint`, which prompts to install and configure ESLint the
+first time it is used — do that before relying on it. There is no test setup yet; see
 ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/) when one is needed.
 
 ## Docs

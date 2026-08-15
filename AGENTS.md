@@ -4,9 +4,9 @@ Map for working in this repo. Keep it short — it points at truth, it is not th
 
 ## What this repo is
 
-`unmapp` — an Expo SDK 57 app using expo-router, running on iOS, Android, and web from
-one codebase. Currently a starter: `src/app/_layout.tsx` (root Stack) and
-`src/app/index.tsx` ("/" screen).
+`unmapp` — an Expo SDK 57 app using expo-router. **iOS is the only target for now.**
+The codebase stays cross-platform because Expo makes that free, but web is explicitly
+out of scope and nothing is checked against it.
 
 ## Hard constraints
 
@@ -33,6 +33,8 @@ one codebase. Currently a starter: `src/app/_layout.tsx` (root Stack) and
 | Dependencies / SDK versions | `package.json` (all `expo-*` pinned to `~57.x`) |
 | Paths, aliases, TS strictness | `tsconfig.json` |
 | Running the app, project layout | [README.md](README.md) |
+| Screen designs | `app-design/v1/` — mockups named `NN-nazwa.png`; highest `vN` is current |
+| Planning work too big for one pass | [docs/exec-plans/create-plan-file.md](docs/exec-plans/create-plan-file.md) |
 
 ## Verify changes
 
@@ -40,17 +42,28 @@ one codebase. Currently a starter: `src/app/_layout.tsx` (root Stack) and
 npx tsc --noEmit
 ```
 
-Then run the app on at least one target (`npm run ios`, `npm run android`, or
-`npm run web`) and confirm the screen you touched actually renders. There are no tests
-yet, so a manual run is the check.
+```bash
+npx expo export --platform ios --output-dir /tmp/unmapp-export
+```
+
+The export proves every import and route resolves, which the type checker alone does
+not. Then look at the screen you touched **on the iOS Simulator**. There are no tests
+yet, so seeing it render is the check.
+
+- **Do not verify on web.** A web check proves nothing here: it misses native text
+  metrics, safe-area insets, and the splash-screen handoff.
+- **Do not start the app.** A Metro instance is kept running in the background —
+  attach to it. If nothing is running, say so and stop rather than starting one.
 
 `npm run lint` (`expo lint`) is not configured yet — the first run installs and sets up
 ESLint interactively.
 
 ## Keeping docs current
 
-Canonical docs for this repo are [README.md](README.md) and this file. Nothing else —
-do not create a `docs/` tree until the repo stops being obvious from these two.
+Canonical docs for this repo are [README.md](README.md) and this file. `docs/` holds
+execution plans only — plans may link to these docs, but these docs must never link to
+an individual plan, so they stay stable as plans come and go. Do not add other `docs/`
+subtrees until README and this file stop answering the question.
 
 Update them **in the same commit** as the change when it:
 
