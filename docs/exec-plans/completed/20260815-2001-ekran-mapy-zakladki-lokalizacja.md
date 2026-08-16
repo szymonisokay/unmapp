@@ -203,13 +203,23 @@ None. Both have been answered — see the Decision Log.
       from `symbolrank` to `filterrank`, widened major roads. Sixteen layers,
       validator exit 0, file reformatted with `gl-style-format`. **Needs
       re-upload before it can be checked.**
-- [ ] Swap `MAP_STYLE_URL` in `src/components/map/map-style.ts` once the style is
-      published, and look at it on the Simulator. Until then the map runs on a
-      stock style and does not resemble `app-design/v1/04-mapa.png`.
+- [x] (2026-08-15 22:41Z) Szymon re-uploaded the sixteen-layer style. Verified on
+      the Simulator at street zoom over Katowice: settlement and district labels
+      return, roads read against the cream, POIs are landmarks rather than hotels.
+- [x] (2026-08-16 22:20Z) Moved the style URL out of the source and into
+      `EXPO_PUBLIC_MAPBOX_STYLE_URL` — see the Decision Log. `map-style.ts` now
+      falls back to a stock style with a `__DEV__` warning when the variable is
+      absent; `.env.example` documents it and README explains the Metro restart.
+- [x] (2026-08-16 22:34Z) Verified after Szymon restarted Metro: the served
+      bundle inlines the style URL exactly once, and the Simulator draws the cream
+      basemap with Poppins street labels — Mikołaja Kopernika, Tadeusza
+      Kościuszki, Wita Stwosza — and landmark POIs (Drapacz Chmur, willa Ludwiga
+      Schneidera, Sala Kameralna). `npx tsc --noEmit` and
+      `npx expo export --platform ios` both exit 0.
 - [x] (2026-08-15 20:40Z) Updated README.md (new Get started with prebuild, the
       layout tree, a "The map" section) and AGENTS.md (`app.config.ts`, no Expo
       Go, secrets in `.env.local`, three new table rows).
-- [ ] Move this plan to `docs/exec-plans/completed/` when the work is committed.
+- [x] (2026-08-16 22:35Z) Moved this plan to `docs/exec-plans/completed/`.
 
 ## Surprises & Discoveries
 
@@ -313,6 +323,25 @@ None. Both have been answered — see the Decision Log.
   lever is the pan's activation distance.
   Evidence: sheet stayed closed after the flick; the same swipe at 0.35 s opens
   it every time.
+
+- Observation: Publishing a style under an **unchanged** URL does not reach an
+  app that has already run it. The Mapbox SDK caches the style document on disk,
+  and neither Fast Refresh nor a relaunch invalidates that cache — the app kept
+  drawing the previous cartography while the Styles API returned the new one.
+  Evidence: `GET /styles/v1/szymonwalach/<id>` showing the corrected layers while
+  the Simulator showed the old ones; `simctl uninstall` followed by `install` of
+  the same unchanged `.app` fixed it immediately.
+  Consequence: when checking a re-uploaded style, reinstall the app or erase the
+  simulator. This is now written into README's "The map" section.
+
+- Observation: Environment variables are inlined into the bundle when Metro
+  starts, so adding one to `.env.local` while Metro is running does nothing —
+  Fast Refresh recompiles the module but `process.env.X` is still `undefined`.
+  The fallback then engages and the app looks wrong in a way that resembles a
+  bug rather than a stale process.
+  Evidence: `grep -c 'mapbox://styles/szymonwalach'` against the bundle Metro was
+  serving returned 0 before the restart and 1 after, with `npx expo export` — a
+  fresh process — succeeding throughout.
 
 - Observation: `expo-location` in the Simulator does not hang without a
   simulated position, as this plan guessed it might. It returns Apple's default
@@ -512,6 +541,22 @@ None. Both have been answered — see the Decision Log.
   solve a problem that did not need it.
   Date/Author: 2026-08-15, Claude.
 
+- Decision: The published style URL lives in `EXPO_PUBLIC_MAPBOX_STYLE_URL`, not
+  in `src/components/map/map-style.ts`, and the constant falls back to a stock
+  Mapbox style when it is missing.
+  Rationale: Szymon's call. The URL is not a secret — public tokens and style
+  URLs both ship inside client apps — so this buys configurability rather than
+  safety: pointing the app at a draft, a dark variant, or the English-labelled
+  style this plan anticipates becomes a `.env.local` edit instead of a commit and
+  a rebuild. The fallback is what keeps that from being a regression: a fresh
+  clone with no `.env.local` still renders a working map rather than a blank
+  rectangle, and the `__DEV__` warning names the variable and the restart.
+  Cost, stated plainly: the design now depends on an untracked file. Someone who
+  clones the repository gets a map that works and does not look right, which is
+  a quieter failure than one that does not work at all — hence the warning and
+  the paragraph in README's Get started.
+  Date/Author: 2026-08-16, Szymon (decision) / Claude (implementation).
+
 - Decision: Placeholder tabs (Odkryj, Misje, Profil) render a named, deliberate
   "not built yet" state rather than a blank screen.
   Rationale: a blank tab is indistinguishable from a crash or a failed render.
@@ -521,13 +566,43 @@ None. Both have been answered — see the Decision Log.
 
 ## Outcomes & Retrospective
 
-To be written at completion.
+Done. The app opens on a full-screen Mapbox map in the cream cartography of
+`app-design/v1/04-mapa.png`, centred on the user's position with the location
+puck, under a header card reading the real progress number from the fixtures and
+above a draggable "Dziś w pobliżu" sheet, reachable from a four-tab bar. All four
+milestones are complete and each was checked on the iOS Simulator.
+
+Three things ended up different from the plan as approved, all recorded in the
+Decision Log: the bottom card became a two-position sheet rather than a fixed
+card; the cream style is a file in `map-style/` uploaded by hand rather than
+authored in Studio; and the style URL lives in the environment rather than in
+source. None of these changed what the screen does — they changed how much of it
+can be adjusted without a commit.
+
+The retrospective worth carrying forward is about verification. `npx tsc
+--noEmit` and `npx expo export` passed at every single point where this plan was
+wrong, and it was wrong six times: the Polish plural forms silently rendering
+`_other`, the sheet's gesture leaking into the map through view flattening, the
+spring overshoot opening a gap under the card, the district labels switched off
+by a stray `maxzoom`, the settlement filter using `symbolrank` where
+`filterrank` belongs, and the POI filter surfacing a wall of hotel names. Every
+one of them was found by looking at the running app or at a rendered tile. In a
+repository with no test suite, the static checks prove the code resolves and
+nothing more; they are a precondition for looking, not a substitute for it.
+
+Two tools earned their place. The Static Images API renders the published style
+at a stated zoom in one request, which the Simulator cannot do reliably — pinch
+gestures driven into it were misread twice. And `gl-style-validate` catches
+malformed expressions instantly, though it has nothing to say about a style that
+is valid and wrong, which is the interesting case.
 
 Already known to be out of scope, so that the next plan starts from an honest
 picture:
 
-- The cream Mapbox Studio style. Ships as a URL swap in
-  `src/components/map/map-style.ts` (Decision Log above).
+- An English-labelled map. Mapbox Streets v8 has no `name_pl`, so labels read
+  `name` and stay Polish regardless of the app's language — see Surprises. The
+  fix is a second published style reading `name_en`, chosen by language in
+  `map-style.ts`, which is now a one-line change since the URL is configurable.
 - "Zaskocz mnie" and "Filtry" render and are pressable but go nowhere.
   `05-zaskocz-mnie.png` is a separate screen and a separate plan.
 - Markers for discovered places. `04-mapa.png` shows one labelled diamond
