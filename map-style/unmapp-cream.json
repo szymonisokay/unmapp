@@ -1,0 +1,398 @@
+{
+  "version": 8,
+  "name": "Unmapp Cream",
+  "metadata": {
+    "unmapp:purpose": "The map cartography for app-design/v1/04-mapa.png: a cream basemap that reads as part of the app rather than as a map dropped into it.",
+    "unmapp:colors": "background #F7F4EE = colors.background, roads #E5E3DD = colors.border, greenery #CFDCC0 = colors.mapHalo, buildings #EFEAE1 derived. Water #DDE4E3 is the only value with no token behind it - add colors.mapWater to src/design/tokens.ts if it stays.",
+    "unmapp:labels": "Four: cities and districts from place_label, street names from the road layer, and landmarks from poi_label. The first draft had none, on the theory that a discovery app should not name what it asks you to find - which was wrong for streets, since without them you cannot tell where you are standing. Note that building names are not in the building layer; in Mapbox Streets v8 they arrive as POIs. Still absent: house numbers (housenum_label), transit stops (transit_stop_label) and natural features such as park names (natural_label) - add them by copying label-poi onto those source layers.",
+    "unmapp:poi-filter": "POI labels are filtered by class, not only by density. Filtering on filterrank alone surfaced whatever is large and commercial: in downtown San Francisco that meant eight hotel names and nothing else, the opposite of what this app is for. The whitelist keeps landmark, historic, park_like, arts_and_entertainment and visitor_amenities. Because the class list does the real work, filterrank can be the looser <= 3 without the map filling up. food_and_drink is deliberately off for now even though the domain has a 'jedzenie' category - in a city centre it is hundreds of points and would bring the clutter straight back. Turn it on when the filter screen exists and the user can ask for it.",
+    "unmapp:label-language": "text-field reads `name`, the local name, which in Poland is Polish. Mapbox Streets v8 has no name_pl - localized fields stop at name_en, name_de, name_fr and a dozen others. So the map cannot follow the app's Polish/English switch from this file alone. If English labels are ever wanted, publish a second style whose text-field is [\"coalesce\", [\"get\", \"name_en\"], [\"get\", \"name\"]] and pick the URL by language in src/components/map/map-style.ts. Styles are billed per user, not per style, so a second one costs nothing.",
+    "unmapp:label-font": "Poppins, the same sans the app uses, and hosted by Mapbox - no font upload needed. The weights follow src/design/tokens.ts rather than map convention: districts use Poppins Regular to match the eyebrow style they imitate, cities use Poppins SemiBold to match the label style. Verified against the Fonts API: Poppins Regular, Medium and SemiBold all resolve. Arial Unicode MS Regular stays as the fallback for glyphs Poppins lacks.",
+    "unmapp:upload": "Mapbox Studio > New style > upload this file. Publishing gives a mapbox://styles/<username>/<id> URL that replaces MAP_STYLE_URL in src/components/map/map-style.ts. Custom fonts and icons are not carried by this file and would have to be added in Studio by hand.",
+    "unmapp:low-zoom": "Zoomed out, the first draft showed almost nothing: at zoom 5 over Poland a single label (Berlin), and at zoom 8 none at all. Three causes, all mine. Settlements were filtered on symbolrank with a zoom step, but symbolrank is constant across zooms - it ranks how important a place is, not how dense the labels are. filterrank is the zoom-relative density control and is what the layer uses now; symbolrank drives text size instead, which is its actual purpose. Country names and administrative boundaries were missing entirely. Major roads were 0.4 px of #E5E3DD on #F7F4EE, which is invisible.",
+    "unmapp:worldview": "Mapbox requires a worldview filter on any layer using the admin source, because disputed borders differ by audience. Both admin layers use [\"all\", \"US\"], Mapbox's own default. Change it only with a reason - dropping it does not simplify the style, it makes the boundaries wrong."
+  },
+  "center": [19.0238, 50.2649],
+  "zoom": 12,
+  "bearing": 0,
+  "pitch": 0,
+  "sources": {
+    "composite": {"type": "vector", "url": "mapbox://mapbox.mapbox-streets-v8"}
+  },
+  "glyphs": "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",
+  "layers": [
+    {
+      "id": "background",
+      "type": "background",
+      "paint": {"background-color": "#F7F4EE"}
+    },
+    {
+      "id": "greenery",
+      "type": "fill",
+      "source": "composite",
+      "source-layer": "landuse",
+      "filter": [
+        "match",
+        ["get", "class"],
+        ["park", "grass", "pitch", "cemetery", "scrub", "wood"],
+        true,
+        false
+      ],
+      "paint": {
+        "fill-color": "#CFDCC0",
+        "fill-opacity": ["interpolate", ["linear"], ["zoom"], 8, 0.35, 13, 0.6]
+      }
+    },
+    {
+      "id": "greenery-large",
+      "type": "fill",
+      "source": "composite",
+      "source-layer": "landuse_overlay",
+      "filter": [
+        "match",
+        ["get", "class"],
+        ["national_park", "wetland"],
+        true,
+        false
+      ],
+      "paint": {
+        "fill-color": "#CFDCC0",
+        "fill-opacity": ["interpolate", ["linear"], ["zoom"], 6, 0.25, 12, 0.45]
+      }
+    },
+    {
+      "id": "water",
+      "type": "fill",
+      "source": "composite",
+      "source-layer": "water",
+      "paint": {"fill-color": "#DDE4E3"}
+    },
+    {
+      "id": "waterway",
+      "type": "line",
+      "source": "composite",
+      "source-layer": "waterway",
+      "minzoom": 8,
+      "paint": {
+        "line-color": "#DDE4E3",
+        "line-width": ["interpolate", ["linear"], ["zoom"], 8, 0.5, 16, 3]
+      }
+    },
+    {
+      "id": "buildings",
+      "type": "fill",
+      "source": "composite",
+      "source-layer": "building",
+      "minzoom": 14,
+      "filter": ["==", ["geometry-type"], "Polygon"],
+      "paint": {
+        "fill-color": "#EFEAE1",
+        "fill-opacity": ["interpolate", ["linear"], ["zoom"], 14, 0, 15.5, 0.9]
+      }
+    },
+    {
+      "id": "buildings-outline",
+      "type": "line",
+      "source": "composite",
+      "source-layer": "building",
+      "minzoom": 16,
+      "filter": ["==", ["geometry-type"], "Polygon"],
+      "paint": {
+        "line-color": "#E5E1D7",
+        "line-width": 0.6,
+        "line-opacity": ["interpolate", ["linear"], ["zoom"], 16, 0, 17, 1]
+      }
+    },
+    {
+      "id": "road-minor",
+      "type": "line",
+      "source": "composite",
+      "source-layer": "road",
+      "minzoom": 12,
+      "filter": [
+        "all",
+        ["==", ["geometry-type"], "LineString"],
+        [
+          "match",
+          ["get", "class"],
+          [
+            "secondary",
+            "tertiary",
+            "street",
+            "street_limited",
+            "pedestrian",
+            "service",
+            "track"
+          ],
+          true,
+          false
+        ]
+      ],
+      "layout": {"line-cap": "round", "line-join": "round"},
+      "paint": {
+        "line-color": "#E5E3DD",
+        "line-opacity": ["interpolate", ["linear"], ["zoom"], 12, 0, 13, 1],
+        "line-width": [
+          "interpolate",
+          ["exponential", 1.5],
+          ["zoom"],
+          12,
+          0.3,
+          14,
+          0.9,
+          16,
+          2.2,
+          18,
+          6
+        ]
+      }
+    },
+    {
+      "id": "road-major",
+      "type": "line",
+      "source": "composite",
+      "source-layer": "road",
+      "minzoom": 5,
+      "filter": [
+        "all",
+        ["==", ["geometry-type"], "LineString"],
+        [
+          "match",
+          ["get", "class"],
+          ["motorway", "motorway_link", "trunk", "trunk_link", "primary"],
+          true,
+          false
+        ]
+      ],
+      "layout": {"line-cap": "round", "line-join": "round"},
+      "paint": {
+        "line-color": "#E5E3DD",
+        "line-width": [
+          "interpolate",
+          ["exponential", 1.5],
+          ["zoom"],
+          5,
+          0.7,
+          10,
+          1.4,
+          14,
+          2.8,
+          18,
+          9
+        ]
+      }
+    },
+    {
+      "id": "admin-country",
+      "type": "line",
+      "source": "composite",
+      "source-layer": "admin",
+      "filter": [
+        "all",
+        ["==", ["get", "admin_level"], 0],
+        ["==", ["get", "maritime"], "false"],
+        ["match", ["get", "worldview"], ["all", "US"], true, false]
+      ],
+      "layout": {"line-cap": "round", "line-join": "round"},
+      "paint": {
+        "line-color": "#8A8071",
+        "line-opacity": 0.35,
+        "line-width": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          2,
+          0.6,
+          6,
+          1.2,
+          10,
+          1.8
+        ]
+      }
+    },
+    {
+      "id": "admin-state",
+      "type": "line",
+      "source": "composite",
+      "source-layer": "admin",
+      "minzoom": 5,
+      "filter": [
+        "all",
+        ["==", ["get", "admin_level"], 1],
+        ["==", ["get", "maritime"], "false"],
+        ["match", ["get", "worldview"], ["all", "US"], true, false]
+      ],
+      "paint": {
+        "line-color": "#8A8071",
+        "line-opacity": 0.2,
+        "line-width": ["interpolate", ["linear"], ["zoom"], 5, 0.5, 10, 1],
+        "line-dasharray": [3, 2]
+      }
+    },
+    {
+      "id": "label-country",
+      "type": "symbol",
+      "source": "composite",
+      "source-layer": "place_label",
+      "minzoom": 2,
+      "maxzoom": 8,
+      "filter": ["==", ["get", "class"], "country"],
+      "layout": {
+        "text-field": ["get", "name"],
+        "text-font": ["Poppins SemiBold", "Arial Unicode MS Regular"],
+        "text-size": ["interpolate", ["linear"], ["zoom"], 2, 11, 5, 14, 8, 17],
+        "text-letter-spacing": 0.14,
+        "text-transform": "uppercase",
+        "text-max-width": 7,
+        "text-padding": 8
+      },
+      "paint": {
+        "text-color": "#8A8071",
+        "text-halo-color": "#F7F4EE",
+        "text-halo-width": 1.4
+      }
+    },
+    {
+      "id": "label-road",
+      "type": "symbol",
+      "source": "composite",
+      "source-layer": "road",
+      "minzoom": 14,
+      "filter": [
+        "all",
+        ["==", ["geometry-type"], "LineString"],
+        ["has", "name"],
+        [
+          "match",
+          ["get", "class"],
+          [
+            "motorway",
+            "trunk",
+            "primary",
+            "secondary",
+            "tertiary",
+            "street",
+            "street_limited"
+          ],
+          true,
+          false
+        ]
+      ],
+      "layout": {
+        "symbol-placement": "line",
+        "symbol-spacing": 250,
+        "text-field": ["get", "name"],
+        "text-font": ["Poppins Regular", "Arial Unicode MS Regular"],
+        "text-size": ["interpolate", ["linear"], ["zoom"], 14, 9, 18, 12],
+        "text-max-angle": 30,
+        "text-padding": 2,
+        "text-rotation-alignment": "map",
+        "text-pitch-alignment": "viewport"
+      },
+      "paint": {
+        "text-color": "#8A8071",
+        "text-halo-color": "#F7F4EE",
+        "text-halo-width": 1.4
+      }
+    },
+    {
+      "id": "label-poi",
+      "type": "symbol",
+      "source": "composite",
+      "source-layer": "poi_label",
+      "minzoom": 15,
+      "filter": [
+        "all",
+        ["<=", ["get", "filterrank"], 3],
+        [
+          "match",
+          ["get", "class"],
+          [
+            "landmark",
+            "historic",
+            "park_like",
+            "arts_and_entertainment",
+            "visitor_amenities"
+          ],
+          true,
+          false
+        ]
+      ],
+      "layout": {
+        "text-field": ["get", "name"],
+        "text-font": ["Poppins Regular", "Arial Unicode MS Regular"],
+        "text-size": ["interpolate", ["linear"], ["zoom"], 15, 9.5, 18, 12],
+        "text-max-width": 8,
+        "text-padding": 4,
+        "text-optional": true
+      },
+      "paint": {
+        "text-color": "#8A8071",
+        "text-halo-color": "#F7F4EE",
+        "text-halo-width": 1.2
+      }
+    },
+    {
+      "id": "label-district",
+      "type": "symbol",
+      "source": "composite",
+      "source-layer": "place_label",
+      "minzoom": 11,
+      "filter": [
+        "all",
+        ["==", ["get", "class"], "settlement_subdivision"],
+        ["<=", ["get", "filterrank"], 3]
+      ],
+      "layout": {
+        "text-field": ["get", "name"],
+        "text-font": ["Poppins Regular", "Arial Unicode MS Regular"],
+        "text-size": ["interpolate", ["linear"], ["zoom"], 11, 9.5, 15, 12.5],
+        "text-letter-spacing": 0.12,
+        "text-transform": "uppercase",
+        "text-max-width": 7,
+        "text-padding": 4
+      },
+      "paint": {
+        "text-color": "#8A8071",
+        "text-halo-color": "#F7F4EE",
+        "text-halo-width": 1.2
+      }
+    },
+    {
+      "id": "label-settlement",
+      "type": "symbol",
+      "source": "composite",
+      "source-layer": "place_label",
+      "minzoom": 3,
+      "filter": [
+        "all",
+        ["==", ["get", "class"], "settlement"],
+        ["<=", ["get", "filterrank"], 3]
+      ],
+      "layout": {
+        "text-field": ["get", "name"],
+        "text-font": ["Poppins SemiBold", "Arial Unicode MS Regular"],
+        "text-size": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          3,
+          ["step", ["get", "symbolrank"], 12, 8, 10],
+          8,
+          ["step", ["get", "symbolrank"], 16, 8, 13],
+          12,
+          ["step", ["get", "symbolrank"], 20, 8, 16],
+          16,
+          ["step", ["get", "symbolrank"], 24, 8, 19]
+        ],
+        "text-max-width": 8,
+        "text-padding": 6
+      },
+      "paint": {
+        "text-color": "#5C5548",
+        "text-halo-color": "#F7F4EE",
+        "text-halo-width": 1.4
+      }
+    }
+  ]
+}

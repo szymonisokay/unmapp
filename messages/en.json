@@ -1,7 +1,24 @@
 {
-  "home": {
-    "headline": "Discover what your map never showed you",
-    "placeholder": "The app's screens do not exist yet."
+  "tabs": {
+    "map": "Map",
+    "discover": "Discover",
+    "missions": "Missions",
+    "profile": "Profile"
+  },
+  "map": {
+    "eyebrow": "Your map",
+    "cityProgress": "{{city}} — {{percent}}% uncovered",
+    "nearbyEyebrow": "Nearby today",
+    "nearbyHeadline": "You have two free hours. I know somewhere you have never been.",
+    "surpriseMe": "Surprise me",
+    "filters": "Filters",
+    "locationDenied": "Without location access the map shows {{city}}.",
+    "locationUnavailable": "Your position could not be determined. The map shows {{city}}.",
+    "sheetHint": "Drag or tap to open today's suggestion."
+  },
+  "placeholder": {
+    "eyebrow": "Not built yet",
+    "waitingFor": "This screen will be built from the {{mockup}} design."
   },
   "category": {
     "natura": "nature",

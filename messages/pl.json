@@ -1,7 +1,24 @@
 {
-  "home": {
-    "headline": "Odkryj to, czego nie ma na Twojej mapie",
-    "placeholder": "Ekrany aplikacji jeszcze nie istnieją."
+  "tabs": {
+    "map": "Mapa",
+    "discover": "Odkryj",
+    "missions": "Misje",
+    "profile": "Profil"
+  },
+  "map": {
+    "eyebrow": "Twoja mapa",
+    "cityProgress": "{{city}} — {{percent}}% odkryte",
+    "nearbyEyebrow": "Dziś w pobliżu",
+    "nearbyHeadline": "Masz wolne 2 godziny. Znam coś, czego jeszcze nie widziałeś.",
+    "surpriseMe": "Zaskocz mnie",
+    "filters": "Filtry",
+    "locationDenied": "Bez dostępu do lokalizacji mapa pokazuje {{city}}.",
+    "locationUnavailable": "Nie udało się ustalić Twojej pozycji. Mapa pokazuje {{city}}.",
+    "sheetHint": "Przeciągnij lub dotknij, aby rozwinąć propozycję na dziś."
+  },
+  "placeholder": {
+    "eyebrow": "W budowie",
+    "waitingFor": "Ten ekran powstanie na podstawie projektu {{mockup}}."
   },
   "category": {
     "natura": "natura",
