@@ -73,7 +73,7 @@ src/design/        colour, spacing, radius, and type tokens; font loading
 src/domain/        app vocabulary (Place, Discovery, Mission) and pure helpers
 src/data/          the discovery repository, its in-memory impl, and data hooks
 src/i18n/          i18next setup; language comes from the device
-src/location/      permission and position, as a hook
+src/location/      permission, position, and the city name, as hooks
 messages/          translated copy — pl.json and en.json
 map-style/         the Mapbox style document, uploaded to Studio by hand
 assets/images/     app icons, splash, and image assets

@@ -19,6 +19,7 @@ const PLACES: Place[] = [
     name: 'Ukryty punkt widokowy',
     summary: 'Dawna hałda porośnięta brzozami. Widok na całą dolinę.',
     category: 'nietypowe',
+    city: 'Katowice',
     rating: 4.7,
     distanceKm: 23,
     travelMinutes: 27,
@@ -29,6 +30,7 @@ const PLACES: Place[] = [
     name: 'Stary sad w Giszowcu',
     summary: 'Zapomniany sad w środku osiedla patronackiego.',
     category: 'natura',
+    city: 'Katowice',
     rating: 4.4,
     distanceKm: 4,
     travelMinutes: 12,
@@ -39,6 +41,9 @@ const PLACES: Place[] = [
     name: 'Wieża ciśnień w Chorzowie',
     summary: 'Ceglana wieża z 1905 roku, widoczna z całej okolicy.',
     category: 'architektura',
+    // Chorzów, and deliberately on the Katowice map — see the comment on
+    // `Place.city`. The same goes for the Dziećkowice reservoir below.
+    city: 'Katowice',
     rating: 4.6,
     distanceKm: 11,
     travelMinutes: 18,
@@ -49,6 +54,7 @@ const PLACES: Place[] = [
     name: 'Zalew w Dziećkowicach',
     summary: 'Rozległy zbiornik z dziką, wschodnią linią brzegową.',
     category: 'natura',
+    city: 'Katowice',
     rating: 4.5,
     distanceKm: 28,
     travelMinutes: 32,

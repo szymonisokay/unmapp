@@ -7,6 +7,7 @@
   },
   "map": {
     "eyebrow": "Your map",
+    "newCityEyebrow": "New map",
     "cityProgress": "{{city}} — {{percent}}% uncovered",
     "nearbyEyebrow": "Nearby today",
     "nearbyHeadline": "You have two free hours. I know somewhere you have never been.",

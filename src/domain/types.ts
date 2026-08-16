@@ -35,6 +35,20 @@ export interface Place {
   name: string;
   summary: string;
   category: Category;
+  /**
+   * Which city's map this place belongs to — **not** its postal address.
+   *
+   * A place can sit in a neighbouring town and still belong to a city's map:
+   * 08-odkryto shows "Ukryty punkt widokowy", 23 km out on a spoil tip, moving
+   * the bar labelled "Katowice" from 63% to 64,2%. 09-skala-eksploracji explains
+   * the model — reach is measured in distance bands (Okolica 0–10 km, Region
+   * 10–50 km, Weekend 50–150 km) and "każde miasto ma własną mapę eksploracji".
+   *
+   * So "Wieża ciśnień w Chorzowie" carries `city: 'Katowice'`, and that is
+   * correct rather than a typo. The administrative truth is in the name, which
+   * is the part a user reads.
+   */
+  city: string;
   /** Out of 5, as shown in the stat row of 19-szczegoly-miejsca. */
   rating: number;
   distanceKm: number;
@@ -69,6 +83,16 @@ export interface Mission {
 export interface CityProgress {
   city: string;
   discoveredCount: number;
+  /**
+   * How many places the catalogue knows about in this city. Zero means the city
+   * is not covered yet, and that is what the "NOWA MAPA" header state on
+   * 10-nowe-miasto keys on.
+   *
+   * Deliberately not inferred from `percent`: a city with six places and none
+   * discovered is also 0%, and it is emphatically not a new map — it is a map
+   * you have not started. The two facts diverge as soon as the catalogue grows.
+   */
+  totalPlaces: number;
   /** 0 to 1. */
   percent: number;
 }

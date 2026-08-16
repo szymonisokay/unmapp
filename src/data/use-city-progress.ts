@@ -19,13 +19,14 @@ export function useCityProgress(city: string): CityProgress | null {
     let cancelled = false;
 
     async function load() {
-      const [discoveries, totalPlaces] = await Promise.all([
+      const [discoveries, places, totalPlaces] = await Promise.all([
         repository.listDiscoveries(),
+        repository.listPlaces(),
         repository.countPlacesInCity(city),
       ]);
 
       if (!cancelled) {
-        setProgress(computeCityProgress(discoveries, totalPlaces, city));
+        setProgress(computeCityProgress(discoveries, places, totalPlaces, city));
       }
     }
 

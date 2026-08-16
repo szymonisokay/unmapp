@@ -7,6 +7,7 @@
   },
   "map": {
     "eyebrow": "Twoja mapa",
+    "newCityEyebrow": "Nowa mapa",
     "cityProgress": "{{city}} — {{percent}}% odkryte",
     "nearbyEyebrow": "Dziś w pobliżu",
     "nearbyHeadline": "Masz wolne 2 godziny. Znam coś, czego jeszcze nie widziałeś.",
